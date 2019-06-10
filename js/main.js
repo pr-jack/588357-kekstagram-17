@@ -1,4 +1,7 @@
 'use strict';
+var MIN_LIKES = 15;
+var MAX_LIKES = 200;
+var NUMBER_OF_PHOTOS = 24;
 
 var messages = [
   'Всё отлично!',
@@ -16,24 +19,56 @@ var names = [
   'Дмитрий',
   'Александр'
 ];
-
+// Задаем случайное количество лайков
+var getRandomLikes = function () {
+  var randomLikes = Math.floor((Math.random() * (MAX_LIKES - MIN_LIKES) + MIN_LIKES));
+  return randomLikes;
+};
+// Задаем случайный номер от 1 до 6
+var getRandomNumbers = function () {
+  var randomNumbers = Math.floor((Math.random() * (1 - 6) + 6));
+  return randomNumbers;
+};
+// Создаем объект с комментариями
+var getObjectsComents = function () {
+  var objectComents = [];
+  for (var j = 0; j < 6; j++) {
+    objectComents.push({
+      avatar: 'img/avatar-' + getRandomNumbers() + '.svg',
+      message: messages[getRandomNumbers()],
+      name: names[getRandomNumbers()]
+    });
+  }
+  return objectComents;
+};
+// Создаем объект с описанием фотографий
 var getObjects = function (length) {
   var objects = [];
-  for (var i = 1; i <= length; i++) {
-    var randomLikes = (Math.random() * (15 - 200) + 15);
-    var randomNumbers = (Math.random() * (1 - 6) + 6);
-
+  for (var i = 0; i <= length; i++) {
     objects.push({
-      'url': 'photos/' + i + '.jpg',
-      'likes': randomLikes,
-      'comments': {
-        'avatar': 'img/avatar-' + randomNumbers + '.svg',
-        'message': messages[randomNumbers],
-        'naeme': names[randomNumbers]
-      }
+      url: 'photos/' + (i + 1) + '.jpg',
+      likes: getRandomLikes(),
+      comments: getObjectsComents()
     });
   }
   return objects;
 };
 
-getObjects(25);
+var photos = getObjects(NUMBER_OF_PHOTOS);
+
+var picture = document.querySelector('#picture')
+    .content
+    .querySelector('.picture');
+
+var fragment = document.createDocumentFragment();
+
+for (var i = 0; i < NUMBER_OF_PHOTOS; i++) {
+  var pictureElement = picture.cloneNode(true);
+  pictureElement.querySelector('picture__img').src = photos[i].url;
+  pictureElement.querySelector('picture__comments').textContent = photos[i].comments;
+  pictureElement.querySelector('picture__likes').textContent = photos[i].likes;
+
+  fragment.appendChild(pictureElement);
+}
+
+picture.appendChild(fragment);
