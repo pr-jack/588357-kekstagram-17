@@ -32,11 +32,11 @@ var getRandomNumbers = function (min, max) {
 };
 // Создаем случайные сообщения
 var getRandomTextMessage = function () {
-  var randomBoolean = (Math.floor(Math.random() * 2) === 0);
+  var randomLength = (Math.floor(Math.random() * 2) === 0);
   var firstMessage = messages[getRandomNumbers(NUMBERS.min, NUMBERS.max)] + ' ' + messages[getRandomNumbers(NUMBERS.min, NUMBERS.max)];
   var secondMessage = messages[getRandomNumbers(NUMBERS.min, NUMBERS.max)];
 
-  if (randomBoolean === true) {
+  if (randomLength) {
     return firstMessage;
   }
   return secondMessage;
