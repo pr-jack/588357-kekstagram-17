@@ -1,7 +1,7 @@
 'use strict';
 var MIN_LIKES = 15;
 var MAX_LIKES = 200;
-var NUMBER_OF_PHOTOS = 24;
+var NUMBER_OF_PHOTOS = 25;
 
 var messages = [
   'Всё отлично!',
@@ -44,7 +44,7 @@ var getObjectsComents = function () {
 // Создаем объект с описанием фотографий
 var getObjects = function (length) {
   var objects = [];
-  for (var i = 0; i <= length; i++) {
+  for (var i = 0; i < length; i++) {
     objects.push({
       url: 'photos/' + (i + 1) + '.jpg',
       likes: getRandomLikes(),
@@ -56,19 +56,23 @@ var getObjects = function (length) {
 
 var photos = getObjects(NUMBER_OF_PHOTOS);
 
-var picture = document.querySelector('#picture')
+var pictureTemplate = document.querySelector('#picture')
     .content
     .querySelector('.picture');
 
 var fragment = document.createDocumentFragment();
 
-for (var i = 0; i < NUMBER_OF_PHOTOS; i++) {
-  var pictureElement = picture.cloneNode(true);
-  pictureElement.querySelector('picture__img').src = photos[i].url;
-  pictureElement.querySelector('picture__comments').textContent = photos[i].comments;
-  pictureElement.querySelector('picture__likes').textContent = photos[i].likes;
+var renderPhoto = function (photo) {
+  var pictureElement = pictureTemplate.cloneNode(true);
 
-  fragment.appendChild(pictureElement);
+  pictureElement.querySelector('picture__img').src = photo.url;
+  pictureElement.querySelector('picture__comments').textContent = photo.comments;
+  pictureElement.querySelector('picture__likes').textContent = photo.likes;
+
+  return pictureElement;
+};
+
+for (var i = 0; i < photos.length; i++) {
+  fragment.appendChild(renderPhoto(photos[i]));
 }
-
-picture.appendChild(fragment);
+pictureTemplate.appendChild(fragment);
