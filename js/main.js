@@ -1,7 +1,13 @@
 'use strict';
-var MIN_LIKES = 15;
-var MAX_LIKES = 200;
-var NUMBER_OF_PHOTOS = 25;
+var NUMBERS_OF_PHOTOS = 25;
+var LIKES = {
+  min: 15,
+  max: 200
+};
+var NUMBERS = {
+  min: 1,
+  max: 6
+};
 
 var messages = [
   'Всё отлично!',
@@ -19,42 +25,51 @@ var names = [
   'Дмитрий',
   'Александр'
 ];
-// Задаем случайное количество лайков
-var getRandomLikes = function () {
-  var randomLikes = Math.floor((Math.random() * (MAX_LIKES - MIN_LIKES) + MIN_LIKES));
-  return randomLikes;
+// Вычисляем случайное число
+var getRandomNumbers = function (min, max) {
+  var randomNumber = Math.floor((Math.random() * (max - min) + min));
+  return randomNumber;
 };
-// Задаем случайный номер от 1 до 6
-var getRandomNumbers = function () {
-  var randomNumbers = Math.floor((Math.random() * (1 - 6) + 6));
-  return randomNumbers;
+// Создаем случайные сообщения
+var getRandomTextMessage = function () {
+  var randomBoolean = (Math.floor(Math.random() * 2) === 0);
+  var firstMessage = messages[getRandomNumbers(NUMBERS.min, NUMBERS.max)] + ' ' + messages[getRandomNumbers(NUMBERS.min, NUMBERS.max)];
+  var secondMessage = messages[getRandomNumbers(NUMBERS.min, NUMBERS.max)];
+
+  if (randomBoolean === true) {
+    return firstMessage;
+  }
+  return secondMessage;
+
 };
+
 // Создаем объект с комментариями
 var getObjectsComents = function () {
   var objectComents = [];
-  for (var j = 0; j < 6; j++) {
+  for (var j = 0; j < NUMBERS.max; j++) {
     objectComents.push({
-      avatar: 'img/avatar-' + getRandomNumbers() + '.svg',
-      message: messages[getRandomNumbers()],
-      name: names[getRandomNumbers()]
+      avatar: 'img/avatar-' + getRandomNumbers(NUMBERS.min, NUMBERS.max) + '.svg',
+      message: getRandomTextMessage(),
+      name: names[getRandomNumbers(NUMBERS.min, NUMBERS.max)]
     });
   }
   return objectComents;
 };
+
 // Создаем объект с описанием фотографий
-var getObjects = function (length) {
+var getObjects = function (count) {
   var objects = [];
-  for (var i = 0; i < length; i++) {
+  for (var i = 0; i < count; i++) {
     objects.push({
       url: 'photos/' + (i + 1) + '.jpg',
-      likes: getRandomLikes(),
+      likes: getRandomNumbers(LIKES.min, LIKES.max),
       comments: getObjectsComents()
     });
   }
   return objects;
 };
 
-var photos = getObjects(NUMBER_OF_PHOTOS);
+var photos = getObjects(NUMBERS_OF_PHOTOS);
 
 var pictureTemplate = document.querySelector('#picture')
     .content
