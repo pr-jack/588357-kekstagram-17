@@ -93,3 +93,65 @@ for (var i = 0; i < photos.length; i++) {
 }
 
 picturesTitleElement.appendChild(fragment);
+
+// Показываем форму редактирования изображения
+var uploadFile = document.querySelector('#upload-file');
+var imgUploadOverlay = document.querySelector('.img-upload__overlay');
+uploadFile.addEventListener('change', function () {
+  imgUploadOverlay.classList.remove('hidden');
+});
+
+// Закрываем форму редактирования изображения
+var uploadCancel = document.querySelector('#upload-cancel');
+uploadCancel.addEventListener('click', function () {
+  imgUploadOverlay.classList.add('hidden');
+});
+
+document.addEventListener('keydown', function (evt) {
+  if (evt.keyCode === 27) {
+    imgUploadOverlay.classList.add('hidden');
+  }
+});
+
+// Накладываем эффекты на изображение
+var effectNone = document.querySelector('#effect-none');
+var effectChrome = document.querySelector('#effect-chrome');
+var effectSepia = document.querySelector('#effect-sepia');
+var effectMarvin = document.querySelector('#effect-marvin');
+var effectPhobos = document.querySelector('#effect-phobos');
+var effectHeat = document.querySelector('#effect-heat');
+
+var imgUploadPreview = document.querySelector('.img-upload__preview');
+
+effectNone.addEventListener('click', function () {
+  imgUploadPreview.classList.remove();
+  imgUploadPreview.classList.add('effects__preview--none');
+});
+effectChrome.addEventListener('click', function () {
+  imgUploadPreview.classList.remove();
+  imgUploadPreview.classList.add('effects__preview--chrome');
+});
+effectSepia.addEventListener('click', function () {
+  imgUploadPreview.classList.remove();
+  imgUploadPreview.classList.add('effects__preview--sepia');
+});
+effectMarvin.addEventListener('click', function () {
+  imgUploadPreview.classList.remove();
+  imgUploadPreview.classList.add('effects__preview--marvin');
+});
+effectPhobos.addEventListener('click', function () {
+  imgUploadPreview.classList.remove();
+  imgUploadPreview.classList.add('effects__preview--phobos');
+});
+effectHeat.addEventListener('click', function () {
+  imgUploadPreview.classList.remove();
+  imgUploadPreview.classList.add('effects__preview--heat');
+});
+
+// Интенсивность эффекта(не доделан. зашел в тупик)
+var effectLevelPin = document.querySelector('.effect-level__pin');
+var effectLevelValue = document.querySelector('.effect-level__value');
+
+effectLevelPin.addEventListener('mouseup', function () {
+  effectLevelValue.value = 100;
+});
