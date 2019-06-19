@@ -126,13 +126,19 @@ var effectLevel = document.querySelector('.effect-level');
 var effectLevelValue = effectLevel.querySelector('.effect-level__value');
 var effectLevelLine = effectLevel.querySelector('.effect-level__line');
 var effectLevelPin = effectLevel.querySelector('.effect-level__pin');
+var effectLevelDepth = effectLevel.querySelector('.effect-level__depth');
 var currentEffect = 'none';
+var DEFAULT_EFECT_VALUE = 100;
+
 
 var changeEffects = function (evt) {
   if (evt.target.value === 'none') {
     effectLevel.classList.add('hidden');
   } else if (evt.target.value !== 'none') {
     effectLevel.classList.remove('hidden');
+    effectLevelValue.value = DEFAULT_EFECT_VALUE;
+    effectLevelPin.style.left = '100%';
+    effectLevelDepth.style.width = '100%';
     imgUploadPreview.classList.add('effects__preview--' + evt.target.value);
   }
   currentEffect = evt.target.value;
@@ -172,4 +178,36 @@ var changeLevel = function (effectType) {
 effectLevelPin.addEventListener('mouseup', function () {
   var value = effectLevelPercent;
   changeLevel(currentEffect, value);
+});
+
+// Изменяем масштаб
+var MIN_SCALE_VALUE = 25;
+var MAX_SCALE_VALUE = 100;
+var STEP_SCALE_VALUE = 25;
+var imgUploadScale = document.querySelector('.img-upload__scale');
+var scaleControlSmaller = imgUploadScale.querySelector('.scale__control--smaller');
+var scaleControlBigger = imgUploadScale.querySelector('.scale__control--bigger');
+var scaleControlValue = imgUploadScale.querySelector('.scale__control--value');
+
+scaleControlValue.value = MAX_SCALE_VALUE + '%';
+
+var changeSize = function (value) {
+  imgUploadPreview.style.transform = 'scale' + '(' + value / 100 + ')';
+};
+
+var changeScale = function (step) {
+  var currentControlValue = parseInt(scaleControlValue.value, 10);
+  if (currentControlValue + step <= MAX_SCALE_VALUE && currentControlValue + step >= MIN_SCALE_VALUE) {
+    var result = currentControlValue + step;
+    scaleControlValue.value = result + '%';
+    changeSize(result);
+  }
+};
+
+scaleControlSmaller.addEventListener('click', function () {
+  changeScale(-STEP_SCALE_VALUE);
+});
+
+scaleControlBigger.addEventListener('click', function () {
+  changeScale(STEP_SCALE_VALUE);
 });
