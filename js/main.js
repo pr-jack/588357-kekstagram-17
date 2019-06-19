@@ -9,6 +9,8 @@ var NUMBERS = {
   max: 6
 };
 
+var ESC_BUTTON = 27;
+
 var messages = [
   'Всё отлично!',
   'В целом всё неплохо. Но не всё.',
@@ -103,55 +105,62 @@ uploadFile.addEventListener('change', function () {
 
 // Закрываем форму редактирования изображения
 var uploadCancel = document.querySelector('#upload-cancel');
-uploadCancel.addEventListener('click', function () {
+var closePopup = function () {
   imgUploadOverlay.classList.add('hidden');
+};
+
+uploadCancel.addEventListener('click', function () {
+  closePopup();
 });
 
 document.addEventListener('keydown', function (evt) {
-  if (evt.keyCode === 27) {
-    imgUploadOverlay.classList.add('hidden');
+  if (evt.keyCode === ESC_BUTTON) {
+    closePopup();
   }
 });
 
 // Накладываем эффекты на изображение
-var effectNone = document.querySelector('#effect-none');
-var effectChrome = document.querySelector('#effect-chrome');
-var effectSepia = document.querySelector('#effect-sepia');
-var effectMarvin = document.querySelector('#effect-marvin');
-var effectPhobos = document.querySelector('#effect-phobos');
-var effectHeat = document.querySelector('#effect-heat');
-
 var imgUploadPreview = document.querySelector('.img-upload__preview');
+var effectsList = document.querySelector('.effects__list');
+var effectLevel = document.querySelector('.effect-level');
+var effectLevelValue = effectLevel.querySelector('.effect-level__value');
+var effectLevelLine = effectLevel.querySelector('.effect-level__line');
+var effectLevelPin = effectLevel.querySelector('.effect-level__pin');
 
-effectNone.addEventListener('click', function () {
-  imgUploadPreview.classList.remove();
-  imgUploadPreview.classList.add('effects__preview--none');
-});
-effectChrome.addEventListener('click', function () {
-  imgUploadPreview.classList.remove();
-  imgUploadPreview.classList.add('effects__preview--chrome');
-});
-effectSepia.addEventListener('click', function () {
-  imgUploadPreview.classList.remove();
-  imgUploadPreview.classList.add('effects__preview--sepia');
-});
-effectMarvin.addEventListener('click', function () {
-  imgUploadPreview.classList.remove();
-  imgUploadPreview.classList.add('effects__preview--marvin');
-});
-effectPhobos.addEventListener('click', function () {
-  imgUploadPreview.classList.remove();
-  imgUploadPreview.classList.add('effects__preview--phobos');
-});
-effectHeat.addEventListener('click', function () {
-  imgUploadPreview.classList.remove();
-  imgUploadPreview.classList.add('effects__preview--heat');
+var changeEffects = function (evt) {
+  if (evt.target.value === 'none') {
+    effectLevel.classList.add('hidden');
+  } else if (evt.target.value !== 'none') {
+    effectLevel.classList.remove('hidden');
+    imgUploadPreview.classList.add('effects__preview--' + evt.target.value);
+  }
+};
+
+effectsList.addEventListener('change', function (evt) {
+  changeEffects(evt);
 });
 
-// Интенсивность эффекта(не доделан. зашел в тупик)
-var effectLevelPin = document.querySelector('.effect-level__pin');
-var effectLevelValue = document.querySelector('.effect-level__value');
+// Интенсивность эффекта
+var changeLevel = function () {
+  effectLevelValue.value = (effectLevelPin.offsetLeft / effectLevelLine.clientWidth).toFixed(2);
+
+  if (imgUploadPreview.classList[0] === 'effects__preview--chrome') {
+    imgUploadPreview.style.filter = 'grayscale(' + effectLevelValue.value + ')';
+
+  } else if (imgUploadPreview.classList[0] === 'effects__preview--sepia') {
+    imgUploadPreview.style.filter = 'sepia(' + effectLevelValue.value + ')';
+
+  } else if (imgUploadPreview.classList[0] === 'effects__preview--marvin') {
+    imgUploadPreview.style.filter = 'invert(' + effectLevelValue.value * 100 + '%)';
+
+  } else if (imgUploadPreview.classList[0] === 'effects__preview--phobos') {
+    imgUploadPreview.style.filter = 'blur(' + effectLevelValue.value * 3 + 'px)';
+
+  } else if (imgUploadPreview.classList[0] === 'effects__preview--heat') {
+    imgUploadPreview.style.filter = 'brightness(' + effectLevelValue.value * 3 + ')';
+  }
+};
 
 effectLevelPin.addEventListener('mouseup', function () {
-  effectLevelValue.value = 100;
+  changeLevel();
 });
