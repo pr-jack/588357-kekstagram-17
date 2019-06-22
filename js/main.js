@@ -122,6 +122,7 @@ document.addEventListener('keydown', function (evt) {
 // Накладываем эффекты на изображение
 var imgUploadPreview = document.querySelector('.img-upload__preview');
 var effectsList = document.querySelector('.effects__list');
+var effectsRadio = effectsList.querySelector('.effects__radio').value;
 var effectLevel = document.querySelector('.effect-level');
 var effectLevelValue = effectLevel.querySelector('.effect-level__value');
 var effectLevelLine = effectLevel.querySelector('.effect-level__line');
@@ -129,7 +130,6 @@ var effectLevelPin = effectLevel.querySelector('.effect-level__pin');
 var effectLevelDepth = effectLevel.querySelector('.effect-level__depth');
 var currentEffect = 'none';
 var DEFAULT_EFECT_VALUE = 100;
-
 
 var changeEffects = function (evt) {
   if (evt.target.value === 'none') {
@@ -148,35 +148,33 @@ effectsList.addEventListener('change', function (evt) {
   changeEffects(evt);
 });
 
-var effectLevelPercent = (effectLevelPin.offsetLeft / effectLevelLine.clientWidth).toFixed(2);
-
 // Интенсивность эффекта
-var changeLevel = function (effectType) {
+var changeLevel = function (effectType, value) {
 
-  switch (effectType) {
-    case 'effects__preview--chrome':
-      imgUploadPreview.style.filter = 'grayscale(' + effectLevelValue.value + ')';
+  switch (effectsRadio) {
+    case 'chrome':
+      imgUploadPreview.style.filter = 'grayscale(' + value + ')';
       break;
 
-    case 'effects__preview--sepia':
-      imgUploadPreview.style.filter = 'sepia(' + effectLevelValue.value + ')';
+    case 'sepia':
+      imgUploadPreview.style.filter = 'sepia(' + value + ')';
       break;
 
-    case 'effects__preview--marvin':
-      imgUploadPreview.style.filter = 'invert(' + effectLevelValue.value * 100 + '%)';
+    case 'marvin':
+      imgUploadPreview.style.filter = 'invert(' + value * 100 + '%)';
       break;
 
-    case 'effects__preview--phobos':
-      imgUploadPreview.style.filter = 'blur(' + effectLevelValue.value * 3 + 'px)';
+    case 'phobos':
+      imgUploadPreview.style.filter = 'blur(' + value * 3 + 'px)';
       break;
 
     case 'effects__preview--heat':
-      imgUploadPreview.style.filter = 'brightness(' + effectLevelValue.value * 3 + ')';
+      imgUploadPreview.style.filter = 'brightness(' + value * 3 + ')';
   }
 };
 
 effectLevelPin.addEventListener('mouseup', function () {
-  var value = effectLevelPercent;
+  var value = (effectLevelPin.offsetLeft / effectLevelLine.clientWidth).toFixed(2);
   changeLevel(currentEffect, value);
 });
 
