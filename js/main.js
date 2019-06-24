@@ -122,7 +122,6 @@ document.addEventListener('keydown', function (evt) {
 // Накладываем эффекты на изображение
 var imgUploadPreview = document.querySelector('.img-upload__preview');
 var effectsList = document.querySelector('.effects__list');
-var effectsRadio = effectsList.querySelector('.effects__radio').value;
 var effectLevel = document.querySelector('.effect-level');
 var effectLevelValue = effectLevel.querySelector('.effect-level__value');
 var effectLevelLine = effectLevel.querySelector('.effect-level__line');
@@ -149,9 +148,11 @@ effectsList.addEventListener('change', function (evt) {
 });
 
 // Интенсивность эффекта
+var MAX_INTENSITY_EFFECT = 3;
+
 var changeLevel = function (effectType, value) {
 
-  switch (effectsRadio) {
+  switch (effectType) {
     case 'chrome':
       imgUploadPreview.style.filter = 'grayscale(' + value + ')';
       break;
@@ -165,11 +166,11 @@ var changeLevel = function (effectType, value) {
       break;
 
     case 'phobos':
-      imgUploadPreview.style.filter = 'blur(' + value * 3 + 'px)';
+      imgUploadPreview.style.filter = 'blur(' + value * MAX_INTENSITY_EFFECT + 'px)';
       break;
 
     case 'effects__preview--heat':
-      imgUploadPreview.style.filter = 'brightness(' + value * 3 + ')';
+      imgUploadPreview.style.filter = 'brightness(' + value * MAX_INTENSITY_EFFECT + ')';
   }
 };
 
