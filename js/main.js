@@ -195,6 +195,45 @@ effectLevelPin.addEventListener('mouseup', function () {
   changeLevel(currentEffect, value);
 });
 
+
+// Перетаскивание слайдера
+effectLevelPin.addEventListener('mousedown', function (evt) {
+  evt.preventDefault();
+
+  var startCoords = effectLevelPin.getBoundingClientRect().left + effectLevelPin.offsetWidth;
+
+  var onMouseMove = function (moveEvt) {
+    moveEvt.preventDefault();
+
+    var shift = startCoords - moveEvt.clientX;
+
+    startCoords = moveEvt.clientX;
+
+    var pinLeft = effectLevelPin.offsetLeft - shift;
+
+    var lineLeft = effectLevelLine.getBoundingClientRect().left;
+    var lineRight = effectLevelLine.getBoundingClientRect().right;
+    if (startCoords <= lineLeft) {
+      pinLeft = 0;
+    } else if (startCoords >= lineRight) {
+      pinLeft = effectLevelLine.clientWidth;
+    }
+
+    effectLevelPin.style.left = pinLeft + 'px';
+    effectLevelDepth.style.width = pinLeft + 'px';
+  };
+
+  var onMouseUp = function (upEvt) {
+    upEvt.preventDefault();
+
+    document.removeEventListener('mousemove', onMouseMove);
+    document.removeEventListener('mouseup', onMouseUp);
+  };
+
+  document.addEventListener('mousemove', onMouseMove);
+  document.addEventListener('mouseup', onMouseUp);
+});
+
 // Изменяем масштаб
 var MIN_SCALE_VALUE = 25;
 var MAX_SCALE_VALUE = 100;
