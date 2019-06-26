@@ -105,18 +105,34 @@ uploadFile.addEventListener('change', function () {
 
 // Закрываем форму редактирования изображения
 var uploadCancel = document.querySelector('#upload-cancel');
+var textDescription = imgUploadOverlay.querySelector('.text__description');
+
 var closePopup = function () {
   imgUploadOverlay.classList.add('hidden');
 };
+
+var onImgUploadEscPress = function (evt) {
+  if (evt.keyCode === ESC_BUTTON) {
+    closePopup();
+  }
+};
+
+var addEscClose = function () {
+  document.addEventListener('keydown', onImgUploadEscPress);
+};
+
+addEscClose();
 
 uploadCancel.addEventListener('click', function () {
   closePopup();
 });
 
-document.addEventListener('keydown', function (evt) {
-  if (evt.keyCode === ESC_BUTTON) {
-    closePopup();
-  }
+textDescription.addEventListener('focus', function () {
+  document.removeEventListener('keydown', onImgUploadEscPress);
+});
+
+textDescription.addEventListener('blur', function () {
+  addEscClose();
 });
 
 // Накладываем эффекты на изображение
