@@ -147,6 +147,8 @@ var currentEffect = 'none';
 var DEFAULT_EFECT_VALUE = 100;
 
 var changeEffects = function (evt) {
+  imgUploadPreview.className = '';
+  imgUploadPreview.style.filter = '';
   if (evt.target.value === 'none') {
     effectLevel.classList.add('hidden');
   } else if (evt.target.value !== 'none') {
@@ -185,7 +187,7 @@ var changeLevel = function (effectType, value) {
       imgUploadPreview.style.filter = 'blur(' + value * MAX_INTENSITY_EFFECT + 'px)';
       break;
 
-    case 'effects__preview--heat':
+    case 'heat':
       imgUploadPreview.style.filter = 'brightness(' + value * MAX_INTENSITY_EFFECT + ')';
   }
 };
@@ -194,7 +196,6 @@ effectLevelPin.addEventListener('mouseup', function () {
   var value = (effectLevelPin.offsetLeft / effectLevelLine.clientWidth).toFixed(2);
   changeLevel(currentEffect, value);
 });
-
 
 // Перетаскивание слайдера
 effectLevelPin.addEventListener('mousedown', function (evt) {
