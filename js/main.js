@@ -147,6 +147,8 @@ var currentEffect = 'none';
 var DEFAULT_EFECT_VALUE = 100;
 
 var changeEffects = function (evt) {
+  imgUploadPreview.className = '';
+  imgUploadPreview.style.filter = '';
   if (evt.target.value === 'none') {
     effectLevel.classList.add('hidden');
   } else if (evt.target.value !== 'none') {
@@ -185,7 +187,7 @@ var changeLevel = function (effectType, value) {
       imgUploadPreview.style.filter = 'blur(' + value * MAX_INTENSITY_EFFECT + 'px)';
       break;
 
-    case 'effects__preview--heat':
+    case 'heat':
       imgUploadPreview.style.filter = 'brightness(' + value * MAX_INTENSITY_EFFECT + ')';
   }
 };
@@ -193,6 +195,43 @@ var changeLevel = function (effectType, value) {
 effectLevelPin.addEventListener('mouseup', function () {
   var value = (effectLevelPin.offsetLeft / effectLevelLine.clientWidth).toFixed(2);
   changeLevel(currentEffect, value);
+});
+
+// Перетаскивание слайдера
+effectLevelPin.addEventListener('mousedown', function (evt) {
+  evt.preventDefault();
+  var startCoords = effectLevelPin.getBoundingClientRect().left + effectLevelPin.offsetWidth / 2;
+
+  var onMouseMove = function (moveEvt) {
+    moveEvt.preventDefault();
+
+    var shift = startCoords - moveEvt.clientX;
+
+    startCoords = moveEvt.clientX;
+
+    var pinLeft = effectLevelPin.offsetLeft - shift;
+
+    var lineLeft = effectLevelLine.getBoundingClientRect().left;
+    var lineRight = effectLevelLine.getBoundingClientRect().right;
+    if (startCoords <= lineLeft) {
+      pinLeft = 0;
+    } else if (startCoords >= lineRight) {
+      pinLeft = effectLevelLine.clientWidth;
+    }
+
+    effectLevelPin.style.left = pinLeft + 'px';
+    effectLevelDepth.style.width = pinLeft + 'px';
+  };
+
+  var onMouseUp = function (upEvt) {
+    upEvt.preventDefault();
+
+    document.removeEventListener('mousemove', onMouseMove);
+    document.removeEventListener('mouseup', onMouseUp);
+  };
+
+  document.addEventListener('mousemove', onMouseMove);
+  document.addEventListener('mouseup', onMouseUp);
 });
 
 // Изменяем масштаб
