@@ -200,8 +200,7 @@ effectLevelPin.addEventListener('mouseup', function () {
 // Перетаскивание слайдера
 effectLevelPin.addEventListener('mousedown', function (evt) {
   evt.preventDefault();
-
-  var startCoords = effectLevelPin.getBoundingClientRect().left + effectLevelPin.offsetWidth;
+  var startCoords = effectLevelPin.getBoundingClientRect().left + effectLevelPin.offsetWidth / 2;
 
   var onMouseMove = function (moveEvt) {
     moveEvt.preventDefault();
