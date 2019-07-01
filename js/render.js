@@ -2,11 +2,12 @@
 (function () {
   var imgFilters = document.querySelector('.img-filters');
   imgFilters.classList.remove('img-filters--inactive');
+
   var arrayPhotos = [];
 
   var successHandler = function (data) {
     arrayPhotos = data;
-    window.render(arrayPhotos);
+    window.insertPhoto(arrayPhotos);
   };
 
   var errorHandler = function (errorMessage) {
@@ -21,6 +22,5 @@
     document.body.insertAdjacentElement('afterbegin', node);
   };
 
-  var URL = 'https://js.dump.academy/kekstagram/data';
-  window.load(URL, successHandler, errorHandler);
+  window.load(successHandler, errorHandler);
 })();
