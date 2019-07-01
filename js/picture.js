@@ -1,15 +1,11 @@
 'use strict';
 // Создаем объект с описанием фотографий
 (function () {
-  var NUMBERS_OF_PHOTOS = 25;
-  var photos = window.getObjects(NUMBERS_OF_PHOTOS);
-
   var pictureTemplate = document.querySelector('#picture')
       .content
       .querySelector('.picture');
 
   var picturesTitleElement = document.querySelector('.pictures');
-  var fragment = document.createDocumentFragment();
 
   var renderPhoto = function (photo) {
     var pictureElement = pictureTemplate.cloneNode(true);
@@ -21,9 +17,13 @@
     return pictureElement;
   };
 
-  for (var i = 0; i < photos.length; i++) {
-    fragment.appendChild(renderPhoto(photos[i]));
-  }
+  var insertPhoto = function (photos) {
+    var fragment = document.createDocumentFragment();
+    for (var i = 0; i < photos.length; i++) {
+      fragment.appendChild(renderPhoto(photos[i]));
+    }
+    picturesTitleElement.appendChild(fragment);
+  };
 
-  picturesTitleElement.appendChild(fragment);
+  window.load(insertPhoto);
 })();
