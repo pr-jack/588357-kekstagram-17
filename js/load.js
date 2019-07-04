@@ -27,5 +27,6 @@
 
     xhr.open('GET', URL);
     xhr.send();
+    window.arrayPhotos = xhr.response;
   };
 })();
