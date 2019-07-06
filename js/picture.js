@@ -49,7 +49,7 @@
     btn.classList.add('img-filters__button--active');
   };
 
-  // функция для сортировки и показа фотографий по обсуждаемости (в зависимости от количества комментариев)
+  // функция показа фотографий по обсуждаемости
   var showDiscussedFotos = function (photos) {
     var photosCopy = photos.slice();
     photosCopy.sort(function (first, second) {
@@ -112,4 +112,32 @@
   filterPopular.addEventListener('click', onFilterButtonClickDebounce);
   filterDiscussed.addEventListener('click', onFilterButtonClickDebounce);
   filterNew.addEventListener('click', onFilterButtonClickDebounce);
+
+  // Показываем увеличенное изображение
+  var bigPicture = document.querySelector('.big-picture');
+  var socialComments = document.querySelector('.social__comments');
+
+  var getBigPicture = function (photos) {
+    bigPicture.classList.remove('hidden');
+    bigPicture.querySelector('.big-picture__img img').src = photos[0].url;
+    bigPicture.querySelector('.likes-count').textContent = photos[0].likes;
+    bigPicture.querySelector('.comments-count').textContent = photos[0].comments.length;
+    bigPicture.querySelector('.comments-count').textContent = photos[0].comments.length;
+    socialComments.querySelector('.social__picture').src = photos[0].comments[0].avatar;
+    socialComments.querySelector('.social__text').textContent = photos[0].comments[0].message;
+    bigPicture.querySelector('.social__caption').textContent = photos[0].description;
+  };
+
+  window.load(getBigPicture);
+
+  // Скрываем счетчик и загрузку комментариев
+  var socialCommentCount = bigPicture.querySelector('.social__comment-count');
+  var commentsLoader = bigPicture.querySelector('.comments-loader');
+
+  var getHiddenElement = function (element) {
+    element.classList.add('visually-hidden');
+  };
+
+  getHiddenElement(socialCommentCount);
+  getHiddenElement(commentsLoader);
 })();
