@@ -119,16 +119,27 @@
 
   var getBigPicture = function (photos) {
     bigPicture.classList.remove('hidden');
-    bigPicture.querySelector('.big-picture__img img').src = photos[0].url;
-    bigPicture.querySelector('.likes-count').textContent = photos[0].likes;
-    bigPicture.querySelector('.comments-count').textContent = photos[0].comments.length;
-    bigPicture.querySelector('.comments-count').textContent = photos[0].comments.length;
-    socialComments.querySelector('.social__picture').src = photos[0].comments[0].avatar;
-    socialComments.querySelector('.social__text').textContent = photos[0].comments[0].message;
-    bigPicture.querySelector('.social__caption').textContent = photos[0].description;
+    bigPicture.querySelector('.big-picture__img img').src = photos.url;
+    bigPicture.querySelector('.likes-count').textContent = photos.likes;
+    bigPicture.querySelector('.comments-count').textContent = photos.comments.length;
+    socialComments.querySelector('.social__picture').src = photos.comments.avatar;
+    socialComments.querySelector('.social__text').textContent = photos.comments.message;
+    bigPicture.querySelector('.social__caption').textContent = photos.description;
   };
 
-  window.load(getBigPicture);
+  var showBigPhoto = function (evt) {
+    evt.preventDefault();
+    if (evt.target.classList.contains('picture__img')) {
+      var attribute = evt.target.getAttribute('src');
+      for (var i = 0; i < picturesBlock.length; i++) {
+        if (picturesBlock[i].url === attribute) {
+          getBigPicture(picturesBlock[i]);
+        }
+      }
+    }
+  };
+
+  picturesTitleElement.addEventListener('click', showBigPhoto);
 
   // Скрываем счетчик и загрузку комментариев
   var socialCommentCount = bigPicture.querySelector('.social__comment-count');
@@ -140,4 +151,28 @@
 
   getHiddenElement(socialCommentCount);
   getHiddenElement(commentsLoader);
+
+  // Закрываем попап
+  var ESC_BUTTON = 27;
+  var bigPictureCancel = bigPicture.querySelector('.big-picture__cancel');
+
+  var closePopup = function () {
+    bigPicture.classList.add('hidden');
+  };
+
+  var onImgUploadEscPress = function (evt) {
+    if (evt.keyCode === ESC_BUTTON) {
+      closePopup();
+    }
+  };
+
+  var addEscClose = function () {
+    document.addEventListener('keydown', onImgUploadEscPress);
+  };
+
+  addEscClose();
+
+  bigPictureCancel.addEventListener('click', function () {
+    closePopup();
+  });
 })();
