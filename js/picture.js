@@ -139,7 +139,7 @@
     }
   };
 
-  picturesTitleElement.addEventListener('click', showBigPhoto);
+  pictureTemplate.addEventListener('click', showBigPhoto);
 
   // Скрываем счетчик и загрузку комментариев
   var socialCommentCount = bigPicture.querySelector('.social__comment-count');
