@@ -11,15 +11,15 @@
   // Закрываем форму редактирования изображения
   var uploadCancel = document.querySelector('#upload-cancel');
   var textDescription = imgUploadOverlay.querySelector('.text__description');
-  var textHashtags = imgUploadOverlay.querySelector('.text__hashtags');
+  var textHashtags = document.querySelector('.text__hashtags');
 
-  var closePopup = function () {
-    imgUploadOverlay.classList.add('hidden');
+  var closePopup = function (element) {
+    element.classList.add('hidden');
   };
 
   var onImgUploadEscPress = function (evt) {
     if (evt.keyCode === ESC_BUTTON) {
-      closePopup();
+      closePopup(imgUploadOverlay);
     }
   };
 
@@ -30,7 +30,7 @@
   addEscClose();
 
   uploadCancel.addEventListener('click', function () {
-    closePopup();
+    closePopup(imgUploadOverlay);
   });
 
   textDescription.addEventListener('focus', function () {
@@ -53,8 +53,16 @@
   var MAX_HASHTAGS_LENGTH = 5;
   var MAX_HASHTAG_SIZE = 20;
   var MIN_HASHTAG_SIZE = 2;
-  // var elementFormHashTags = document.querySelector('.text__hashtags');
+
   var imgUploadForm = document.querySelector('.img-upload__form');
+
+
+  var resetForm = function () {
+    textHashtags.value = '';
+    uploadFile.value = null;
+    textDescription.value = '';
+  };
+
 
   var validateFormData = function (formData) {
     var hashArray = formData.get('hashtags').toLowerCase().split(' ');
@@ -65,7 +73,6 @@
     }
 
     var hashIsValid = true;
-
     if (hashArray[0].length) {
       var hashArrayUnique = [];
       hashIsValid = !hashArray.some(function (item) {
@@ -86,14 +93,107 @@
   };
 
   var onHashtagsError = function () {
-    // alert('Поле заполнено не верно');
-    // elementFormHashTags.setCustomValidity('Поле заполнено не верно');
     event.preventDefault();
+    textHashtags.style.boxShadow = '0 0 0 3px red';
+    textHashtags.addEventListener('keydown', onHashtagsChange);
+  };
+
+  var onHashtagsChange = function () {
+    textHashtags.style = '';
+    textHashtags.removeEventListener('keydown', onHashtagsChange);
+  };
+
+  var onSuccessSave = function () {
+    resetForm();
+    closePopup(imgUploadOverlay);
+    renderSuccessModal();
+  };
+
+  var RenderSuccess = function () {
+    var successTemplate = document.querySelector('#success')
+      .content
+      .querySelector('.success');
+    this.element = successTemplate.cloneNode(true);
+    return this.element;
+  };
+
+  var renderSuccessModal = function () {
+    var fragment = document.createDocumentFragment();
+    fragment.appendChild(new RenderSuccess());
+    document.querySelector('main').appendChild(fragment);
+    initSuccessModal();
+  };
+
+  var initSuccessModal = function () {
+    var modal = document.querySelector('.success');
+    var closeButton = modal.querySelector('.success__button');
+    closeButton.addEventListener('click', function () {
+      closeSuccessModal();
+    });
+    closeButton.addEventListener('keydown', function (evt) {
+      window.util.isEnterEvent(evt, closeSuccessModal);
+    });
+    modal.addEventListener('click', function (evt) {
+      if (evt.target === modal) {
+        closeSuccessModal();
+      }
+    });
+    document.addEventListener('keydown', function (evt) {
+      window.util.isEscEvent(evt, closeSuccessModal);
+    });
+  };
+
+  var closeSuccessModal = function () {
+    document.querySelector('.success').remove();
+    document.removeEventListener('keydown', function (evt) {
+      window.util.isEscEvent(evt, closeSuccessModal);
+    });
+  };
+
+  var onErrorSave = function () {
+    renderErrorModal();
+  };
+
+  var renderErrorModal = function () {
+    var fragment = document.createDocumentFragment();
+    fragment.appendChild(new window.RenderError());
+    document.querySelector('main').appendChild(fragment);
+    initErrorModal();
+  };
+
+  var initErrorModal = function () {
+    var modal = document.querySelector('.error');
+    var closeButton = modal.querySelector('.error__button');
+    closeButton.addEventListener('click', function () {
+      closeErrorModal();
+    });
+    closeButton.addEventListener('keydown', function (evt) {
+      window.util.isEnterEvent(evt, closeErrorModal);
+    });
+    modal.addEventListener('click', function (evt) {
+      if (evt.target === modal) {
+        closeErrorModal();
+      }
+    });
+  };
+
+  var closeErrorModal = function () {
+    document.querySelector('.error').remove();
+    document.removeEventListener('keydown', function (evt) {
+      window.util.isEscEvent(evt, closeErrorModal);
+    });
   };
 
   var onSubmitForm = function (evt) {
     var formData = new FormData(evt.target);
-    validateFormData(formData);
+    var isFormFalid = validateFormData(formData);
+
+    if (!isFormFalid) {
+      evt.preventDefault();
+    }
+
+    window.upload(formData, onSuccessSave, onErrorSave);
+    evt.preventDefault();
   };
 
   imgUploadForm.addEventListener('submit', onSubmitForm);
