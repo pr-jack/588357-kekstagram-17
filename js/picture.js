@@ -10,6 +10,7 @@
   var picturesTitleElement = document.querySelector('.pictures');
   var picturesBlock = [];
 
+
   var renderPhoto = function (photo) {
     var pictureElement = pictureTemplate.cloneNode(true);
 
@@ -139,7 +140,16 @@
     }
   };
 
-  pictureTemplate.addEventListener('click', showBigPhoto);
+  var openBigPicture = function (evt) {
+    var target = evt.target;
+    var picture = target.closest('.picture');
+    if (!picture) {
+      return;
+    }
+    showBigPhoto(evt);
+  };
+
+  picturesTitleElement.addEventListener('click', openBigPicture);
 
   // Скрываем счетчик и загрузку комментариев
   var socialCommentCount = bigPicture.querySelector('.social__comment-count');
