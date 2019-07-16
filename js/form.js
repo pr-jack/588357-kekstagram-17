@@ -8,10 +8,12 @@
   var effectNone = imgUploadOverlay.querySelector('#effect-none');
 
   uploadFile.addEventListener('change', function () {
+    textHashtags.style.boxShadow = '';
     effectNone.checked = true;
     imgUploadOverlay.classList.remove('hidden');
     window.preview.effectLevel.classList.add('hidden');
     window.preview.imgUploadPreview.style.transform = '';
+    window.preview.imgUploadPreview.style.filter = '';
     window.preview.scaleControlValue.value = MAX_SCALE_VALUE + '%';
   });
 
@@ -73,46 +75,6 @@
     textDescription.value = '';
   };
 
-
-  var validateFormData = function (formData) {
-    var hashArray = formData.get('hashtags').toLowerCase().split(' ');
-
-    if (hashArray.length > MAX_HASHTAGS_LENGTH) {
-      onHashtagsError();
-      return false;
-    }
-
-    var hashIsValid = true;
-    if (hashArray[0].length) {
-      var hashArrayUnique = [];
-      hashIsValid = !hashArray.some(function (item) {
-        if (item.length > MAX_HASHTAG_SIZE || item.length < MIN_HASHTAG_SIZE || item.charAt(0) !== '#') {
-          onHashtagsError();
-          return item;
-        }
-        if (hashArrayUnique.indexOf(item) >= 0) {
-          onHashtagsError();
-          return item;
-        } else {
-          hashArrayUnique.push(item);
-        }
-        return false;
-      });
-    }
-    return hashIsValid;
-  };
-
-  var onHashtagsError = function () {
-    event.preventDefault();
-    textHashtags.style.boxShadow = '0 0 0 3px red';
-    textHashtags.addEventListener('keydown', onHashtagsChange);
-  };
-
-  var onHashtagsChange = function () {
-    textHashtags.style = '';
-    textHashtags.removeEventListener('keydown', onHashtagsChange);
-  };
-
   var onSuccessSave = function () {
     resetForm();
     closePopup(imgUploadOverlay);
@@ -161,6 +123,8 @@
   };
 
   var onErrorSave = function () {
+    resetForm();
+    closePopup(imgUploadOverlay);
     renderErrorModal();
   };
 
@@ -194,17 +158,50 @@
     });
   };
 
-  var onSubmitForm = function (evt) {
-    var formData = new FormData(evt.target);
-    var isFormFalid = validateFormData(formData);
+  var validateFormData = function () {
+    var hashtagValue = textHashtags.value.replace(/\s+/g, ' ').trim().toLowerCase();
+    var hashtagArray = hashtagValue.split(' ');
+    var errorMessage;
 
-    if (!isFormFalid) {
-      evt.preventDefault();
+    var repeatedHashtags = hashtagArray.filter(function (element, indexElement, array) {
+      return indexElement !== array.indexOf(element) || indexElement !== array.lastIndexOf(element);
+    });
+
+    for (var i = 0; i < hashtagArray.length; i++) {
+      var hash = hashtagArray[i];
+
+      if (hash.charAt(0) !== '#') {
+        errorMessage = 'Хэш-тег должен начинаться с символа #';
+
+      } else if (hash.charAt(0) === '#' && hash.length < MIN_HASHTAG_SIZE) {
+        errorMessage = 'Хэш-тег должен быть больше одного символа';
+
+      } else if (hash.charAt(0) === '#' && hash.length >= MIN_HASHTAG_SIZE) {
+        var result = hash.match(/#/g).length;
+
+        if (hash.length > MAX_HASHTAG_SIZE) {
+          errorMessage = 'Хэш-тег должен быть не больше 20 символов';
+
+        } else if (hashtagArray.length > MAX_HASHTAGS_LENGTH) {
+          errorMessage = 'Должно быть не больше 5 хэш-тегов';
+
+        } else if (result > 1) {
+          errorMessage = 'Хэш-теги должны быть разделены пробелами';
+
+        } else if (repeatedHashtags.length > 0) {
+          errorMessage = 'Хэш-теги не должны повторяться';
+        }
+      }
+      if (errorMessage) {
+        textHashtags.setCustomValidity(errorMessage);
+        textHashtags.style.border = '2px solid red';
+      } else {
+        textHashtags.setCustomValidity(' ');
+        textHashtags.style.border = 'none';
+        window.upload(new FormData(imgUploadForm), onSuccessSave, onErrorSave);
+      }
     }
-
-    window.upload(formData, onSuccessSave, onErrorSave);
-    evt.preventDefault();
   };
 
-  imgUploadForm.addEventListener('submit', onSubmitForm);
+  textHashtags.addEventListener('change', validateFormData);
 })();

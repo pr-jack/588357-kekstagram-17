@@ -1,23 +1,24 @@
 'use strict';
 // Создаем объект с описанием фотографий
 (function () {
-  var NEW_PICTURES = 10;
   var DEBOUNCE_INTERVAL = 500;
+  var picturesTitleElement = document.querySelector('.pictures');
   var pictureTemplate = document.querySelector('#picture')
       .content
       .querySelector('.picture');
-
-  var picturesTitleElement = document.querySelector('.pictures');
+  var imgFilters = document.querySelector('.img-filters');
+  var filterPopular = imgFilters.querySelector('#filter-popular');
+  var filterDiscussed = imgFilters.querySelector('#filter-discussed');
+  var filterNew = imgFilters.querySelector('#filter-new');
+  var imgFiltersButton = imgFilters.querySelectorAll('button');
   var picturesBlock = [];
 
 
   var renderPhoto = function (photo) {
     var pictureElement = pictureTemplate.cloneNode(true);
-
     pictureElement.querySelector('.picture__img').src = photo.url;
     pictureElement.querySelector('.picture__comments').textContent = photo.comments.length;
     pictureElement.querySelector('.picture__likes').textContent = photo.likes;
-
     return pictureElement;
   };
 
@@ -27,7 +28,6 @@
       fragment.appendChild(renderPhoto(photos[i]));
     }
     picturesTitleElement.appendChild(fragment);
-    return photos;
   };
 
   // Функция для удаления всех элементов из родителя
@@ -36,12 +36,6 @@
       element.remove();
     });
   };
-
-  var imgFilters = document.querySelector('.img-filters');
-  var filterPopular = imgFilters.querySelector('#filter-popular');
-  var filterDiscussed = imgFilters.querySelector('#filter-discussed');
-  var filterNew = imgFilters.querySelector('#filter-new');
-  var imgFiltersButton = document.querySelectorAll('.img-filters__button');
 
   var changeFilter = function (btn) {
     imgFiltersButton.forEach(function (btnItem) {
@@ -59,13 +53,20 @@
     insertPhoto(photosCopy);
   };
 
+  var shuffleArray = function (photos) {
+    for (var i = photos.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var temp = photos[i];
+      photos[i] = photos[j];
+      photos[j] = temp;
+    }
+    return photos;
+  };
+
   // Функция для показа 10 новых фотографий (в случайном порядке)
   var showNewFotos = function (photos) {
-    var photosCopy = photos
-      .sort(function () {
-        return Math.random() - 0.5;
-      })
-      .slice(-NEW_PICTURES);
+    var photosCopy = photos.slice();
+    shuffleArray(photosCopy);
     insertPhoto(photosCopy);
   };
 
@@ -92,8 +93,6 @@
     }
   };
 
-  window.load(showLoadSuccess);
-
   var debounce = function (fn) {
     var lastTimeout = null;
     return function () {
@@ -106,6 +105,8 @@
       }, DEBOUNCE_INTERVAL);
     };
   };
+
+  window.load(showLoadSuccess);
 
   var onFilterButtonClickDebounce = debounce(onFilterButtonClick);
 
