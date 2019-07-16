@@ -2,10 +2,17 @@
 // Показываем форму редактирования изображения
 (function () {
   var ESC_BUTTON = 27;
+  var MAX_SCALE_VALUE = 100;
   var uploadFile = document.querySelector('#upload-file');
   var imgUploadOverlay = document.querySelector('.img-upload__overlay');
+  var effectNone = imgUploadOverlay.querySelector('#effect-none');
+
   uploadFile.addEventListener('change', function () {
+    effectNone.checked = true;
     imgUploadOverlay.classList.remove('hidden');
+    window.preview.effectLevel.classList.add('hidden');
+    window.preview.imgUploadPreview.style.transform = '';
+    window.preview.scaleControlValue.value = MAX_SCALE_VALUE + '%';
   });
 
   // Закрываем форму редактирования изображения
@@ -14,6 +21,9 @@
   var textHashtags = document.querySelector('.text__hashtags');
 
   var closePopup = function (element) {
+    uploadFile.value = '';
+    effectNone.checked = true;
+    window.preview.imgUploadPreview.className = 'img-upload__preview';
     element.classList.add('hidden');
   };
 

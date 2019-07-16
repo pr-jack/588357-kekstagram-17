@@ -10,11 +10,21 @@
   var effectLevelDepth = effectLevel.querySelector('.effect-level__depth');
   var currentEffect = 'none';
   var DEFAULT_EFECT_VALUE = 100;
+  var MIN_SCALE_VALUE = 25;
+  var MAX_SCALE_VALUE = 100;
+  var STEP_SCALE_VALUE = 25;
+  var imgUploadScale = document.querySelector('.img-upload__scale');
+  var scaleControlSmaller = imgUploadScale.querySelector('.scale__control--smaller');
+  var scaleControlBigger = imgUploadScale.querySelector('.scale__control--bigger');
+  var scaleControlValue = imgUploadScale.querySelector('.scale__control--value');
 
   window.preview = {
+    effectLevel: effectLevel,
     effectLevelPin: effectLevelPin,
     effectLevelLine: effectLevelLine,
     effectLevelDepth: effectLevelDepth,
+    imgUploadPreview: imgUploadPreview,
+    scaleControlValue: scaleControlValue
   };
 
   var changeEffects = function (evt) {
@@ -69,14 +79,6 @@
   });
 
   // Изменяем масштаб
-  var MIN_SCALE_VALUE = 25;
-  var MAX_SCALE_VALUE = 100;
-  var STEP_SCALE_VALUE = 25;
-  var imgUploadScale = document.querySelector('.img-upload__scale');
-  var scaleControlSmaller = imgUploadScale.querySelector('.scale__control--smaller');
-  var scaleControlBigger = imgUploadScale.querySelector('.scale__control--bigger');
-  var scaleControlValue = imgUploadScale.querySelector('.scale__control--value');
-
   scaleControlValue.value = MAX_SCALE_VALUE + '%';
 
   var changeSize = function (value) {
