@@ -1,8 +1,10 @@
 'use strict';
 // Показываем форму редактирования изображения
 (function () {
-  var ESC_BUTTON = 27;
   var MAX_SCALE_VALUE = 100;
+  var MAX_HASHTAGS_LENGTH = 5;
+  var MAX_HASHTAG_SIZE = 20;
+  var MIN_HASHTAG_SIZE = 2;
   var uploadFile = document.querySelector('#upload-file');
   var imgUploadOverlay = document.querySelector('.img-upload__overlay');
   var effectNone = imgUploadOverlay.querySelector('#effect-none');
@@ -30,19 +32,16 @@
   };
 
   var onImgUploadEscPress = function (evt) {
-    if (evt.keyCode === ESC_BUTTON) {
+    if (window.utils.isEscPressed(evt)) {
+      window.utils.closeElement(imgUploadOverlay);
       closePopup(imgUploadOverlay);
     }
   };
 
-  var addEscClose = function () {
-    document.addEventListener('keydown', onImgUploadEscPress);
-  };
-
-  addEscClose();
+  window.utils.addEscClose(onImgUploadEscPress);
 
   uploadCancel.addEventListener('click', function () {
-    closePopup(imgUploadOverlay);
+    window.utils.closeElement(imgUploadOverlay);
   });
 
   textDescription.addEventListener('focus', function () {
@@ -50,7 +49,7 @@
   });
 
   textDescription.addEventListener('blur', function () {
-    addEscClose();
+    window.utils.addEscClose(onImgUploadEscPress);
   });
 
   // Хэштэги
@@ -59,15 +58,10 @@
   });
 
   textHashtags.addEventListener('blur', function () {
-    addEscClose();
+    window.utils.addEscClose(onImgUploadEscPress);
   });
 
-  var MAX_HASHTAGS_LENGTH = 5;
-  var MAX_HASHTAG_SIZE = 20;
-  var MIN_HASHTAG_SIZE = 2;
-
   var imgUploadForm = document.querySelector('.img-upload__form');
-
 
   var resetForm = function () {
     textHashtags.value = '';
@@ -81,17 +75,17 @@
     renderSuccessModal();
   };
 
-  var RenderSuccess = function () {
+  var renderSuccess = function (element) {
     var successTemplate = document.querySelector('#success')
       .content
       .querySelector('.success');
-    this.element = successTemplate.cloneNode(true);
-    return this.element;
+    element = successTemplate.cloneNode(true);
+    return element;
   };
 
   var renderSuccessModal = function () {
     var fragment = document.createDocumentFragment();
-    fragment.appendChild(new RenderSuccess());
+    fragment.appendChild(renderSuccess());
     document.querySelector('main').appendChild(fragment);
     initSuccessModal();
   };
@@ -124,7 +118,7 @@
 
   var onErrorSave = function () {
     resetForm();
-    closePopup(imgUploadOverlay);
+    window.utils.closeElement(imgUploadOverlay);
     renderErrorModal();
   };
 

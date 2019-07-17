@@ -1,19 +1,21 @@
 'use strict';
 
-window.util = (function () {
-  var ESC_KEYCODE = 27;
-  var ENTER_KEYCODE = 13;
+(function () {
+  var ESC_BUTTON = 27;
 
-  return {
-    isEscEvent: function (evt, action) {
-      if (evt.keyCode === ESC_KEYCODE) {
-        action();
+  window.utils = {
+    isEscPressed: function (evt) {
+      return evt.keyCode === ESC_BUTTON;
+    },
+
+    closeElement: function (element) {
+      if (element) {
+        element.classList.add('hidden');
       }
     },
-    isEnterEvent: function (evt, action) {
-      if (evt.keyCode === ENTER_KEYCODE) {
-        action();
-      }
-    },
+
+    addEscClose: function (element) {
+      document.addEventListener('keydown', element);
+    }
   };
 })();
