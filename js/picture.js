@@ -1,6 +1,7 @@
 'use strict';
 // Создаем объект с описанием фотографий
 (function () {
+  var NEW_PICTURES = 10;
   var DEBOUNCE_INTERVAL = 500;
   var picturesTitleElement = document.querySelector('.pictures');
   var pictureTemplate = document.querySelector('#picture')
@@ -54,18 +55,16 @@
   };
 
   var shuffleArray = function (photos) {
-    for (var i = photos.length - 1; i > 0; i--) {
-      var j = Math.floor(Math.random() * (i + 1));
-      var temp = photos[i];
-      photos[i] = photos[j];
-      photos[j] = temp;
-    }
-    return photos;
+    var photosCopy = photos
+      .sort(function () {
+        return Math.random() - 0.5;
+      });
+    return photosCopy;
   };
 
   // Функция для показа 10 новых фотографий (в случайном порядке)
   var showNewFotos = function (photos) {
-    var photosCopy = photos.slice();
+    var photosCopy = photos.slice(-NEW_PICTURES);
     shuffleArray(photosCopy);
     insertPhoto(photosCopy);
   };
