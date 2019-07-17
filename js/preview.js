@@ -1,6 +1,11 @@
 'use strict';
 // Накладываем эффекты на изображение
 (function () {
+  var DEFAULT_EFECT_VALUE = 100;
+  var MIN_SCALE_VALUE = 25;
+  var MAX_SCALE_VALUE = 100;
+  var STEP_SCALE_VALUE = 25;
+  var MAX_INTENSITY_EFFECT = 3;
   var imgUploadPreview = document.querySelector('.img-upload__preview');
   var effectsList = document.querySelector('.effects__list');
   var effectLevel = document.querySelector('.effect-level');
@@ -9,20 +14,26 @@
   var effectLevelPin = effectLevel.querySelector('.effect-level__pin');
   var effectLevelDepth = effectLevel.querySelector('.effect-level__depth');
   var currentEffect = 'none';
-  var DEFAULT_EFECT_VALUE = 100;
+  var imgUploadScale = document.querySelector('.img-upload__scale');
+  var scaleControlSmaller = imgUploadScale.querySelector('.scale__control--smaller');
+  var scaleControlBigger = imgUploadScale.querySelector('.scale__control--bigger');
+  var scaleControlValue = imgUploadScale.querySelector('.scale__control--value');
 
   window.preview = {
+    effectLevel: effectLevel,
     effectLevelPin: effectLevelPin,
     effectLevelLine: effectLevelLine,
     effectLevelDepth: effectLevelDepth,
+    imgUploadPreview: imgUploadPreview,
+    scaleControlValue: scaleControlValue
   };
 
   var changeEffects = function (evt) {
     imgUploadPreview.className = '';
     imgUploadPreview.style.filter = '';
-    if (evt.target.value === 'none') {
-      effectLevel.classList.add('hidden');
-    } else if (evt.target.value !== 'none') {
+    effectLevel.classList.add('hidden');
+
+    if (evt.target.value !== 'none') {
       effectLevel.classList.remove('hidden');
       effectLevelValue.value = DEFAULT_EFECT_VALUE;
       effectLevelPin.style.left = '100%';
@@ -37,8 +48,6 @@
   });
 
   // Интенсивность эффекта
-  var MAX_INTENSITY_EFFECT = 3;
-
   var changeLevel = function (effectType, value) {
 
     switch (effectType) {
@@ -69,14 +78,6 @@
   });
 
   // Изменяем масштаб
-  var MIN_SCALE_VALUE = 25;
-  var MAX_SCALE_VALUE = 100;
-  var STEP_SCALE_VALUE = 25;
-  var imgUploadScale = document.querySelector('.img-upload__scale');
-  var scaleControlSmaller = imgUploadScale.querySelector('.scale__control--smaller');
-  var scaleControlBigger = imgUploadScale.querySelector('.scale__control--bigger');
-  var scaleControlValue = imgUploadScale.querySelector('.scale__control--value');
-
   scaleControlValue.value = MAX_SCALE_VALUE + '%';
 
   var changeSize = function (value) {

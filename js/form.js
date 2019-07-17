@@ -1,11 +1,22 @@
 'use strict';
 // Показываем форму редактирования изображения
 (function () {
-  var ESC_BUTTON = 27;
+  var MAX_SCALE_VALUE = 100;
+  var MAX_HASHTAGS_LENGTH = 5;
+  var MAX_HASHTAG_SIZE = 20;
+  var MIN_HASHTAG_SIZE = 2;
   var uploadFile = document.querySelector('#upload-file');
   var imgUploadOverlay = document.querySelector('.img-upload__overlay');
+  var effectNone = imgUploadOverlay.querySelector('#effect-none');
+
   uploadFile.addEventListener('change', function () {
+    textHashtags.style.boxShadow = '';
+    effectNone.checked = true;
     imgUploadOverlay.classList.remove('hidden');
+    window.preview.effectLevel.classList.add('hidden');
+    window.preview.imgUploadPreview.style.transform = '';
+    window.preview.imgUploadPreview.style.filter = '';
+    window.preview.scaleControlValue.value = MAX_SCALE_VALUE + '%';
   });
 
   // Закрываем форму редактирования изображения
@@ -14,23 +25,23 @@
   var textHashtags = document.querySelector('.text__hashtags');
 
   var closePopup = function (element) {
+    uploadFile.value = '';
+    effectNone.checked = true;
+    window.preview.imgUploadPreview.className = 'img-upload__preview';
     element.classList.add('hidden');
   };
 
   var onImgUploadEscPress = function (evt) {
-    if (evt.keyCode === ESC_BUTTON) {
+    if (window.utils.isEscPressed(evt)) {
+      window.utils.closeElement(imgUploadOverlay);
       closePopup(imgUploadOverlay);
     }
   };
 
-  var addEscClose = function () {
-    document.addEventListener('keydown', onImgUploadEscPress);
-  };
-
-  addEscClose();
+  window.utils.addEscClose(onImgUploadEscPress);
 
   uploadCancel.addEventListener('click', function () {
-    closePopup(imgUploadOverlay);
+    window.utils.closeElement(imgUploadOverlay);
   });
 
   textDescription.addEventListener('focus', function () {
@@ -38,7 +49,7 @@
   });
 
   textDescription.addEventListener('blur', function () {
-    addEscClose();
+    window.utils.addEscClose(onImgUploadEscPress);
   });
 
   // Хэштэги
@@ -47,60 +58,15 @@
   });
 
   textHashtags.addEventListener('blur', function () {
-    addEscClose();
+    window.utils.addEscClose(onImgUploadEscPress);
   });
 
-  var MAX_HASHTAGS_LENGTH = 5;
-  var MAX_HASHTAG_SIZE = 20;
-  var MIN_HASHTAG_SIZE = 2;
-
   var imgUploadForm = document.querySelector('.img-upload__form');
-
 
   var resetForm = function () {
     textHashtags.value = '';
     uploadFile.value = null;
     textDescription.value = '';
-  };
-
-
-  var validateFormData = function (formData) {
-    var hashArray = formData.get('hashtags').toLowerCase().split(' ');
-
-    if (hashArray.length > MAX_HASHTAGS_LENGTH) {
-      onHashtagsError();
-      return false;
-    }
-
-    var hashIsValid = true;
-    if (hashArray[0].length) {
-      var hashArrayUnique = [];
-      hashIsValid = !hashArray.some(function (item) {
-        if (item.length > MAX_HASHTAG_SIZE || item.length < MIN_HASHTAG_SIZE || item.charAt(0) !== '#') {
-          onHashtagsError();
-          return item;
-        }
-        if (hashArrayUnique.indexOf(item) >= 0) {
-          onHashtagsError();
-          return item;
-        } else {
-          hashArrayUnique.push(item);
-        }
-        return false;
-      });
-    }
-    return hashIsValid;
-  };
-
-  var onHashtagsError = function () {
-    event.preventDefault();
-    textHashtags.style.boxShadow = '0 0 0 3px red';
-    textHashtags.addEventListener('keydown', onHashtagsChange);
-  };
-
-  var onHashtagsChange = function () {
-    textHashtags.style = '';
-    textHashtags.removeEventListener('keydown', onHashtagsChange);
   };
 
   var onSuccessSave = function () {
@@ -109,17 +75,17 @@
     renderSuccessModal();
   };
 
-  var RenderSuccess = function () {
+  var renderSuccess = function (element) {
     var successTemplate = document.querySelector('#success')
       .content
       .querySelector('.success');
-    this.element = successTemplate.cloneNode(true);
-    return this.element;
+    element = successTemplate.cloneNode(true);
+    return element;
   };
 
   var renderSuccessModal = function () {
     var fragment = document.createDocumentFragment();
-    fragment.appendChild(new RenderSuccess());
+    fragment.appendChild(renderSuccess());
     document.querySelector('main').appendChild(fragment);
     initSuccessModal();
   };
@@ -151,6 +117,8 @@
   };
 
   var onErrorSave = function () {
+    resetForm();
+    window.utils.closeElement(imgUploadOverlay);
     renderErrorModal();
   };
 
@@ -184,17 +152,50 @@
     });
   };
 
-  var onSubmitForm = function (evt) {
-    var formData = new FormData(evt.target);
-    var isFormFalid = validateFormData(formData);
+  var validateFormData = function () {
+    var hashtagValue = textHashtags.value.replace(/\s+/g, ' ').trim().toLowerCase();
+    var hashtagArray = hashtagValue.split(' ');
+    var errorMessage;
 
-    if (!isFormFalid) {
-      evt.preventDefault();
+    var repeatedHashtags = hashtagArray.filter(function (element, indexElement, array) {
+      return indexElement !== array.indexOf(element) || indexElement !== array.lastIndexOf(element);
+    });
+
+    for (var i = 0; i < hashtagArray.length; i++) {
+      var hash = hashtagArray[i];
+
+      if (hash.charAt(0) !== '#') {
+        errorMessage = 'Хэш-тег должен начинаться с символа #';
+
+      } else if (hash.charAt(0) === '#' && hash.length < MIN_HASHTAG_SIZE) {
+        errorMessage = 'Хэш-тег должен быть больше одного символа';
+
+      } else if (hash.charAt(0) === '#' && hash.length >= MIN_HASHTAG_SIZE) {
+        var result = hash.match(/#/g).length;
+
+        if (hash.length > MAX_HASHTAG_SIZE) {
+          errorMessage = 'Хэш-тег должен быть не больше 20 символов';
+
+        } else if (hashtagArray.length > MAX_HASHTAGS_LENGTH) {
+          errorMessage = 'Должно быть не больше 5 хэш-тегов';
+
+        } else if (result > 1) {
+          errorMessage = 'Хэш-теги должны быть разделены пробелами';
+
+        } else if (repeatedHashtags.length > 0) {
+          errorMessage = 'Хэш-теги не должны повторяться';
+        }
+      }
+      if (errorMessage) {
+        textHashtags.setCustomValidity(errorMessage);
+        textHashtags.style.border = '2px solid red';
+      } else {
+        textHashtags.setCustomValidity(' ');
+        textHashtags.style.border = 'none';
+        window.upload(new FormData(imgUploadForm), onSuccessSave, onErrorSave);
+      }
     }
-
-    window.upload(formData, onSuccessSave, onErrorSave);
-    evt.preventDefault();
   };
 
-  imgUploadForm.addEventListener('submit', onSubmitForm);
+  textHashtags.addEventListener('change', validateFormData);
 })();

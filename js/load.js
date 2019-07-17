@@ -2,6 +2,7 @@
 
 (function () {
   var URL = 'https://js.dump.academy/kekstagram/data';
+  var TIMEOUT = 1000;
   window.load = function (onSuccess, onError) {
     var xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
@@ -22,7 +23,7 @@
       onError('Запрос не успел выполниться за ' + xhr.timeout + 'мс');
     });
 
-    xhr.timeout = 10000; // 10s
+    xhr.timeout = TIMEOUT; // 10s
 
     xhr.open('GET', URL);
     xhr.send();
