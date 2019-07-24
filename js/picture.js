@@ -223,7 +223,7 @@
     }
   };
 
-  window.utils.addEscClose(onImgUploadEscPress);
+  window.utils.addClose(onImgUploadEscPress);
 
   bigPictureCancel.addEventListener('click', function () {
     window.utils.closeElement(bigPicture);
