@@ -10,7 +10,6 @@
   var effectNone = imgUploadOverlay.querySelector('#effect-none');
 
   uploadFile.addEventListener('change', function () {
-    textHashtags.style.boxShadow = '';
     effectNone.checked = true;
     imgUploadOverlay.classList.remove('hidden');
     window.preview.effectLevel.classList.add('hidden');
@@ -104,9 +103,6 @@
     document.addEventListener('keydown', function () {
       window.utils.addClose(closeEcsSuccessModal);
     });
-    document.addEventListener('keydown', function () {
-      window.utils.addClose(closeEnterSuccessModal);
-    });
 
     var closeSuccessModal = function () {
       document.querySelector('.success').remove();
@@ -120,12 +116,6 @@
         closeSuccessModal();
       }
     };
-
-    var closeEnterSuccessModal = function (evt) {
-      if (window.utils.isEnterPressed(evt)) {
-        closeSuccessModal();
-      }
-    };
   };
 
   var onErrorSave = function () {
@@ -134,9 +124,17 @@
     renderErrorModal();
   };
 
+  var renderError = function (element) {
+    var errorTemplate = document.querySelector('#error')
+      .content
+      .querySelector('.error');
+    element = errorTemplate.cloneNode(true);
+    return element;
+  };
+
   var renderErrorModal = function () {
     var fragment = document.createDocumentFragment();
-    fragment.appendChild(new window.RenderError());
+    fragment.appendChild(renderError());
     document.querySelector('main').appendChild(fragment);
     initErrorModal();
   };
@@ -147,16 +145,10 @@
     closeButton.addEventListener('click', function () {
       closeErrorModal();
     });
-    closeButton.addEventListener('keydown', function (evt) {
-      window.util.isEnterEvent(evt, closeErrorModal);
-    });
     modal.addEventListener('click', function (evt) {
       if (evt.target === modal) {
         closeErrorModal();
       }
-    });
-    document.addEventListener('keydown', function () {
-      window.utils.addClose(closeEnterErrorModal);
     });
     document.addEventListener('keydown', function () {
       window.utils.addClose(closeEcsErrorModal);
@@ -174,12 +166,6 @@
         closeErrorModal();
       }
     };
-
-    var closeEnterErrorModal = function (evt) {
-      if (window.utils.isEnterPressed(evt)) {
-        closeErrorModal();
-      }
-    };
   };
 
   var validateFormData = function () {
@@ -191,39 +177,33 @@
       return indexElement !== array.indexOf(element) || indexElement !== array.lastIndexOf(element);
     });
 
-    for (var i = 0; i < hashtagArray.length; i++) {
-      var hash = hashtagArray[i];
-
+    hashtagArray.forEach(function (element) {
+      var hash = element;
       if (hash.charAt(0) !== '#') {
         errorMessage = 'Хэш-тег должен начинаться с символа #';
-
       } else if (hash.charAt(0) === '#' && hash.length < MIN_HASHTAG_SIZE) {
         errorMessage = 'Хэш-тег должен быть больше одного символа';
-
       } else if (hash.charAt(0) === '#' && hash.length >= MIN_HASHTAG_SIZE) {
         var result = hash.match(/#/g).length;
-
         if (hash.length > MAX_HASHTAG_SIZE) {
           errorMessage = 'Хэш-тег должен быть не больше 20 символов';
-
         } else if (hashtagArray.length > MAX_HASHTAGS_LENGTH) {
           errorMessage = 'Должно быть не больше 5 хэш-тегов';
-
         } else if (result > 1) {
           errorMessage = 'Хэш-теги должны быть разделены пробелами';
-
         } else if (repeatedHashtags.length > 0) {
           errorMessage = 'Хэш-теги не должны повторяться';
         }
       }
-      if (errorMessage) {
-        textHashtags.setCustomValidity(errorMessage);
-        textHashtags.style.border = '2px solid red';
-      } else {
-        textHashtags.setCustomValidity(' ');
-        textHashtags.style.border = 'none';
-        window.upload(new FormData(imgUploadForm), onSuccessSave, onErrorSave);
-      }
+    });
+
+    if (errorMessage) {
+      textHashtags.setCustomValidity(errorMessage);
+      textHashtags.style.border = '2px solid red';
+    } else {
+      textHashtags.setCustomValidity(' ');
+      textHashtags.style.border = 'none';
+      window.upload(new FormData(imgUploadForm), onSuccessSave, onErrorSave);
     }
   };
 

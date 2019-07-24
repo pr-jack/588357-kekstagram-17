@@ -4,7 +4,7 @@
   var URL = 'https://js.dump.academy/kekstagram';
   var TIMEOUT = 10000;
 
-  window.upload = function (onSuccess, onError) {
+  window.upload = function (data, onSuccess, onError) {
     var xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
 
@@ -27,6 +27,6 @@
     xhr.timeout = TIMEOUT;
 
     xhr.open('POST', URL);
-    xhr.send();
+    xhr.send(data);
   };
 })();
