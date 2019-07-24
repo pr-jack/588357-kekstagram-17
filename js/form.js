@@ -38,7 +38,7 @@
     }
   };
 
-  window.utils.addEscClose(onImgUploadEscPress);
+  window.utils.addClose(onImgUploadEscPress);
 
   uploadCancel.addEventListener('click', function () {
     window.utils.closeElement(imgUploadOverlay);
@@ -49,7 +49,7 @@
   });
 
   textDescription.addEventListener('blur', function () {
-    window.utils.addEscClose(onImgUploadEscPress);
+    window.utils.addClose(onImgUploadEscPress);
   });
 
   // Хэштэги
@@ -58,7 +58,7 @@
   });
 
   textHashtags.addEventListener('blur', function () {
-    window.utils.addEscClose(onImgUploadEscPress);
+    window.utils.addClose(onImgUploadEscPress);
   });
 
   var imgUploadForm = document.querySelector('.img-upload__form');
@@ -96,24 +96,36 @@
     closeButton.addEventListener('click', function () {
       closeSuccessModal();
     });
-    closeButton.addEventListener('keydown', function (evt) {
-      window.util.isEnterEvent(evt, closeSuccessModal);
-    });
     modal.addEventListener('click', function (evt) {
       if (evt.target === modal) {
         closeSuccessModal();
       }
     });
-    document.addEventListener('keydown', function (evt) {
-      window.util.isEscEvent(evt, closeSuccessModal);
+    document.addEventListener('keydown', function () {
+      window.utils.addClose(closeEcsSuccessModal);
     });
-  };
+    document.addEventListener('keydown', function () {
+      window.utils.addClose(closeEnterSuccessModal);
+    });
 
-  var closeSuccessModal = function () {
-    document.querySelector('.success').remove();
-    document.removeEventListener('keydown', function (evt) {
-      window.util.isEscEvent(evt, closeSuccessModal);
-    });
+    var closeSuccessModal = function () {
+      document.querySelector('.success').remove();
+      document.removeEventListener('keydown', function () {
+        window.utils.addClose(closeEcsSuccessModal);
+      });
+    };
+
+    var closeEcsSuccessModal = function (evt) {
+      if (window.utils.isEscPressed(evt)) {
+        closeSuccessModal();
+      }
+    };
+
+    var closeEnterSuccessModal = function (evt) {
+      if (window.utils.isEnterPressed(evt)) {
+        closeSuccessModal();
+      }
+    };
   };
 
   var onErrorSave = function () {
@@ -143,13 +155,31 @@
         closeErrorModal();
       }
     });
-  };
-
-  var closeErrorModal = function () {
-    document.querySelector('.error').remove();
-    document.removeEventListener('keydown', function (evt) {
-      window.util.isEscEvent(evt, closeErrorModal);
+    document.addEventListener('keydown', function () {
+      window.utils.addClose(closeEnterErrorModal);
     });
+    document.addEventListener('keydown', function () {
+      window.utils.addClose(closeEcsErrorModal);
+    });
+
+    var closeErrorModal = function () {
+      document.querySelector('.error').remove();
+      document.removeEventListener('keydown', function () {
+        window.utils.addClose(closeEcsErrorModal);
+      });
+    };
+
+    var closeEcsErrorModal = function (evt) {
+      if (window.utils.isEscPressed(evt)) {
+        closeErrorModal();
+      }
+    };
+
+    var closeEnterErrorModal = function (evt) {
+      if (window.utils.isEnterPressed(evt)) {
+        closeErrorModal();
+      }
+    };
   };
 
   var validateFormData = function () {
