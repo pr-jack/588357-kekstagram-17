@@ -5,6 +5,7 @@
   var MAX_HASHTAGS_LENGTH = 5;
   var MAX_HASHTAG_SIZE = 20;
   var MIN_HASHTAG_SIZE = 2;
+  var MAX_TEXTAREA_LENGTH = 140;
   var uploadFile = document.querySelector('#upload-file');
   var imgUploadOverlay = document.querySelector('.img-upload__overlay');
   var effectNone = imgUploadOverlay.querySelector('#effect-none');
@@ -62,110 +63,72 @@
 
   var imgUploadForm = document.querySelector('.img-upload__form');
 
+  var successTemplate = document.querySelector('#success')
+    .content
+    .querySelector('.success');
+
+  var errorTemplate = document.querySelector('#error')
+    .content
+    .querySelector('.error');
+
+  var main = document.querySelector('main');
+
+  var close = function () {
+    var messageElement = main.querySelector('.success, .error');
+    if (messageElement) {
+      messageElement.remove();
+      document.removeEventListener('keydown', onDocumentKeydown);
+    }
+  };
+
   var resetForm = function () {
     textHashtags.value = '';
     uploadFile.value = null;
     textDescription.value = '';
   };
 
+  var onDocumentKeydown = function (evt) {
+    if (window.utils.isEscPressed(evt)) {
+      close();
+    }
+  };
+
   var onSuccessSave = function () {
     resetForm();
-    closePopup(imgUploadOverlay);
-    renderSuccessModal();
-  };
+    window.utils.closeElement(imgUploadOverlay);
+    var element = successTemplate.cloneNode(true);
+    main.appendChild(element);
 
-  var renderSuccess = function (element) {
-    var successTemplate = document.querySelector('#success')
-      .content
-      .querySelector('.success');
-    element = successTemplate.cloneNode(true);
-    return element;
-  };
-
-  var renderSuccessModal = function () {
-    var fragment = document.createDocumentFragment();
-    fragment.appendChild(renderSuccess());
-    document.querySelector('main').appendChild(fragment);
-    initSuccessModal();
-  };
-
-  var initSuccessModal = function () {
-    var modal = document.querySelector('.success');
-    var closeButton = modal.querySelector('.success__button');
-    closeButton.addEventListener('click', function () {
-      closeSuccessModal();
+    element.querySelector('.success__button').addEventListener('click', function () {
+      close();
     });
-    modal.addEventListener('click', function (evt) {
-      if (evt.target === modal) {
-        closeSuccessModal();
+
+    element.addEventListener('click', function (evt) {
+      if (evt.target === element) {
+        close();
       }
     });
-    document.addEventListener('keydown', function () {
-      window.utils.addClose(closeEcsSuccessModal);
-    });
 
-    var closeSuccessModal = function () {
-      document.querySelector('.success').remove();
-      document.removeEventListener('keydown', function () {
-        window.utils.addClose(closeEcsSuccessModal);
-      });
-    };
-
-    var closeEcsSuccessModal = function (evt) {
-      if (window.utils.isEscPressed(evt)) {
-        closeSuccessModal();
-      }
-    };
+    document.addEventListener('keydown', onDocumentKeydown);
   };
 
   var onErrorSave = function () {
     resetForm();
     window.utils.closeElement(imgUploadOverlay);
-    renderErrorModal();
-  };
+    var element = errorTemplate.cloneNode(true);
+    main.appendChild(element);
 
-  var renderError = function (element) {
-    var errorTemplate = document.querySelector('#error')
-      .content
-      .querySelector('.error');
-    element = errorTemplate.cloneNode(true);
-    return element;
-  };
-
-  var renderErrorModal = function () {
-    var fragment = document.createDocumentFragment();
-    fragment.appendChild(renderError());
-    document.querySelector('main').appendChild(fragment);
-    initErrorModal();
-  };
-
-  var initErrorModal = function () {
-    var modal = document.querySelector('.error');
-    var closeButton = modal.querySelector('.error__button');
-    closeButton.addEventListener('click', function () {
-      closeErrorModal();
+    element.querySelector('.error__button').addEventListener('click', function () {
+      close();
     });
-    modal.addEventListener('click', function (evt) {
-      if (evt.target === modal) {
-        closeErrorModal();
+
+    element.addEventListener('click', function (evt) {
+      if (evt.target === element) {
+        close();
       }
     });
-    document.addEventListener('keydown', function () {
-      window.utils.addClose(closeEcsErrorModal);
-    });
 
-    var closeErrorModal = function () {
-      document.querySelector('.error').remove();
-      document.removeEventListener('keydown', function () {
-        window.utils.addClose(closeEcsErrorModal);
-      });
-    };
-
-    var closeEcsErrorModal = function (evt) {
-      if (window.utils.isEscPressed(evt)) {
-        closeErrorModal();
-      }
-    };
+    document.addEventListener('keydown', onDocumentKeydown);
   };
 
   var validateFormData = function () {
@@ -207,5 +170,19 @@
     }
   };
 
+  var validateTextarea = function () {
+    if (textDescription.value > MAX_TEXTAREA_LENGTH) {
+      textDescription.setCustomValidity('длинна комментария не может быть более 140 символов');
+      textDescription.style.border = '2px solid red';
+    }
+    return;
+  };
+
   textHashtags.addEventListener('change', validateFormData);
+  textDescription.addEventListener('change', validateTextarea);
+
+  imgUploadForm.addEventListener('submit', function (evt) {
+    evt.preventDefault();
+    window.upload(new FormData(imgUploadForm), onSuccessSave, onErrorSave);
+  });
 })();
