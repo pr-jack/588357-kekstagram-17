@@ -6,7 +6,10 @@
   var MAX_SCALE_VALUE = 100;
   var STEP_SCALE_VALUE = 25;
   var MAX_INTENSITY_EFFECT = 3;
+  var HIEGHT_PREWEW = 600;
+  var WIDTH_PREWEW = 600;
   var imgUploadPreview = document.querySelector('.img-upload__preview');
+  var img = imgUploadPreview.querySelector('img');
   var effectsList = document.querySelector('.effects__list');
   var effectLevel = document.querySelector('.effect-level');
   var effectLevelValue = effectLevel.querySelector('.effect-level__value');
@@ -25,7 +28,8 @@
     effectLevelLine: effectLevelLine,
     effectLevelDepth: effectLevelDepth,
     imgUploadPreview: imgUploadPreview,
-    scaleControlValue: scaleControlValue
+    scaleControlValue: scaleControlValue,
+    img: img
   };
 
   var changeEffects = function (evt) {
@@ -39,6 +43,8 @@
       effectLevelPin.style.left = '100%';
       effectLevelDepth.style.width = '100%';
       imgUploadPreview.classList.add('effects__preview--' + evt.target.value);
+      img.height = HIEGHT_PREWEW;
+      img.width = WIDTH_PREWEW;
     }
     currentEffect = evt.target.value;
   };

@@ -4,6 +4,7 @@
   var NEW_PICTURES = 10;
   var DEBOUNCE_INTERVAL = 500;
   var MAX_COMMENTS = 5;
+  var FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
   var picturesTitleElement = document.querySelector('.pictures');
   var pictureTemplate = document.querySelector('#picture')
       .content
@@ -13,6 +14,10 @@
   var filterDiscussed = imgFilters.querySelector('#filter-discussed');
   var filterNew = imgFilters.querySelector('#filter-new');
   var imgFiltersButton = imgFilters.querySelectorAll('button');
+  var imgUploadInput = document.querySelector('.img-upload__input');
+  var preview = document.querySelector('.img-upload__preview > img');
+  var imgUploadOverlay = document.querySelector('.img-upload__overlay');
+  var effectsPreviewImageElements = imgUploadOverlay.querySelectorAll('.effects__preview');
   var picturesBlock = [];
 
 
@@ -105,6 +110,29 @@
       }, DEBOUNCE_INTERVAL);
     };
   };
+
+  // Загружаем пользовательское изображение
+  imgUploadInput.addEventListener('change', function () {
+    var file = imgUploadInput.files[0];
+    var fileName = file.name.toLowerCase();
+
+    var matches = FILE_TYPES.some(function (it) {
+      return fileName.endsWith(it);
+    });
+
+    if (matches) {
+      var reader = new FileReader();
+
+      reader.addEventListener('load', function () {
+        preview.src = reader.result;
+        effectsPreviewImageElements.forEach(function (it) {
+          it.style.backgroundImage = 'url(' + reader.result + ')';
+        });
+      });
+
+      reader.readAsDataURL(file);
+    }
+  });
 
   window.load(showLoadSuccess);
 
