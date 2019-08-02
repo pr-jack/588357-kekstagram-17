@@ -111,29 +111,6 @@
     };
   };
 
-  // Загружаем пользовательское изображение
-  imgUploadInput.addEventListener('change', function () {
-    var file = imgUploadInput.files[0];
-    var fileName = file.name.toLowerCase();
-
-    var matches = FILE_TYPES.some(function (it) {
-      return fileName.endsWith(it);
-    });
-
-    if (matches) {
-      var reader = new FileReader();
-
-      reader.addEventListener('load', function () {
-        preview.src = reader.result;
-        effectsPreviewImageElements.forEach(function (it) {
-          it.style.backgroundImage = 'url(' + reader.result + ')';
-        });
-      });
-
-      reader.readAsDataURL(file);
-    }
-  });
-
   window.load(showLoadSuccess);
 
   var onFilterButtonClickDebounce = debounce(onFilterButtonClick);
